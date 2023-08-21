@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.mapper.workbench.TransactionMapper">
+  <resultMap id="BaseResultMap" type="com.bjpowernode.crm.pojo.workbench.Transaction">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="owner" jdbcType="CHAR" property="owner" />
+    <result column="money" jdbcType="VARCHAR" property="money" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="expected_date" jdbcType="CHAR" property="expectedDate" />
+    <result column="customer_id" jdbcType="CHAR" property="customerId" />
+    <result column="stage" jdbcType="VARCHAR" property="stage" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="activity_id" jdbcType="CHAR" property="activityId" />
+    <result column="contacts_id" jdbcType="CHAR" property="contactsId" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
+    <result column="edit_time" jdbcType="CHAR" property="editTime" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="contact_summary" jdbcType="VARCHAR" property="contactSummary" />
+    <result column="next_contact_time" jdbcType="CHAR" property="nextContactTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_tran
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.bjpowernode.crm.pojo.workbench.Transaction">
+    insert into t_tran (id, owner, money, name, 
+      expected_date, customer_id, stage, 
+      type, source, activity_id, 
+      contacts_id, create_by, create_time, 
+      edit_by, edit_time, description, 
+      contact_summary, next_contact_time)
+    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{money,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{expectedDate,jdbcType=CHAR}, #{customerId,jdbcType=CHAR}, #{stage,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{activityId,jdbcType=CHAR}, 
+      #{contactsId,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR}, 
+      #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR}, 
+      #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.bjpowernode.crm.pojo.workbench.Transaction">
+    update t_tran
+    set owner = #{owner,jdbcType=CHAR},
+      money = #{money,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      expected_date = #{expectedDate,jdbcType=CHAR},
+      customer_id = #{customerId,jdbcType=CHAR},
+      stage = #{stage,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR},
+      activity_id = #{activityId,jdbcType=CHAR},
+      contacts_id = #{contactsId,jdbcType=CHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=CHAR},
+      edit_by = #{editBy,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=CHAR},
+      description = #{description,jdbcType=VARCHAR},
+      contact_summary = #{contactSummary,jdbcType=VARCHAR},
+      next_contact_time = #{nextContactTime,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id, 
+    contacts_id, create_by, create_time, edit_by, edit_time, description, contact_summary, 
+    next_contact_time
+    from t_tran
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id, 
+    contacts_id, create_by, create_time, edit_by, edit_time, description, contact_summary, 
+    next_contact_time
+    from t_tran
+  </select>
+  <insert id="insertFormTransferClue">
+    insert t_tran(id, owner, money, name, expected_date, customer_id, stage, type, source, activity_id,
+    contacts_id, create_by, create_time, edit_by, edit_time, description, contact_summary,
+    next_contact_time)
+    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{money,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+    #{expectedDate,jdbcType=CHAR}, #{customerId,jdbcType=CHAR}, #{stage,jdbcType=VARCHAR},
+    #{type,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{activityId,jdbcType=CHAR},
+    #{contactsId,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=CHAR},
+    #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, #{description,jdbcType=VARCHAR},
+    #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR})
+  </insert>
+  <select id="selectByCustomerId" resultMap="BaseResultMap">
+    select id, money, name, expected_date, stage, type
+    from t_tran
+    where customer_id = #{id}
+  </select>
+</mapper>
