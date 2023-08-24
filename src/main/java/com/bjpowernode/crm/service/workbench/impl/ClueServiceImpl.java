@@ -160,7 +160,7 @@ public class ClueServiceImpl implements ClueService {
         clueActivityRelationMapper.deleteByClueId(clueId);
         return true;
     }
-    private static Transaction createTrade(Map<String, String> map,Clue clue,String customerId,String contactsId){
+/*    private static Transaction createTrade(Map<String, String> map,Clue clue,String customerId,String contactsId){
             Transaction transaction = new Transaction();
             transaction.setId(PrimaryUtil.getUUID());
             transaction.setOwner(map.get("createBy"));
@@ -174,5 +174,5 @@ public class ClueServiceImpl implements ClueService {
             transaction.setCreateBy(map.get("createBy"));
             transaction.setCreateTime(map.get("createTime"));
             return transaction;
-    }
+    }*/
 }

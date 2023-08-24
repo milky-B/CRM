@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ContactsActivityRelationMapper {
-    int deleteByPrimaryKey(String id);
+    int deleteByActivityId(String id);
 
     int insert(ContactsActivityRelation row);
 
@@ -20,4 +20,8 @@ public interface ContactsActivityRelationMapper {
 
     /*delete by contactsId*/
     int deleteByContactsId(@Param("ids") List<String> ids);
+
+    int insertContacts(@Param("list")List<ContactsActivityRelation> list);
+
+
 }

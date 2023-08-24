@@ -55,10 +55,39 @@
     </foreach>
     </if>
   </insert>
-  <delete id="deleteByCustomerIds">
+  <delete id="deleteByContactsIds">
     delete from t_contacts_remark
-    where contacts in
+    where contacts_id in
     <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+  <select id="selectRemarkByContactsId">
+    select r.id, note_content,u.name as create_by, r.create_time,u.name as edit_by, r.edit_time, edit_flag, contacts_id
+    from t_contacts_remark r
+    join t_user u on u.id=r.create_by
+    left join t_user u2 on u2.id=r.edit_by
+    where contacts_id=#{id}
+  </select>
+  <select id="selectRemarkById">
+    select r.id, note_content,u.name as create_by, r.create_time,u.name as edit_by, r.edit_time, edit_flag, contacts_id
+    from t_contacts_remark r
+           join t_user u on u.id=r.create_by
+           left join t_user u2 on u2.id=r.edit_by
+    where r.id=#{id}
+  </select>
+  <update id="updateRemarkByPrimaryKey">
+    update t_contacts_remark
+    set note_content = #{noteContent,jdbcType=VARCHAR},
+        edit_by = #{editBy,jdbcType=VARCHAR},
+        edit_time = #{editTime,jdbcType=CHAR},
+        edit_flag = #{editFlag,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <delete id="deleteByRemarkId">
+    delete from t_contacts_remark
+    where contacts_id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
       #{id}
     </foreach>
   </delete>

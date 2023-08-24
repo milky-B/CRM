@@ -5,6 +5,7 @@ import com.bjpowernode.crm.pojo.workbench.CustomerRemark;
 import com.bjpowernode.crm.service.workbench.CustomerRemarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class CustomerRemarkServiceImpl implements CustomerRemarkService {
     }
 
     @Override
+    @Transactional
     public void deleteByCustomerIds(String[] ids) {
         customerRemarkMapper.deleteByCustomerIds(ids);
         return;

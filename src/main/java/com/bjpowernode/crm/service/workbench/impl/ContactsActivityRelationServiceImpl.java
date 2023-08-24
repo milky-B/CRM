@@ -49,4 +49,14 @@ public class ContactsActivityRelationServiceImpl implements ContactsActivityRela
         }
         contactsActivityRelationMapper.deleteByContactsId(list);
     }
+
+    @Override
+    public int insertRelations(List<ContactsActivityRelation> list) {
+        return contactsActivityRelationMapper.insertContacts(list);
+    }
+
+    @Override
+    public int deleteRelation(String id) {
+        return contactsActivityRelationMapper.deleteByActivityId(id);
+    }
 }

@@ -1,5 +1,6 @@
 package com.bjpowernode.crm.controller.workbeanch;
 
+import com.alibaba.druid.sql.ast.statement.SQLForeignKeyImpl;
 import com.bjpowernode.crm.commons.constants.ConstantsMessage;
 import com.bjpowernode.crm.commons.pojo.ReturnMessage;
 import com.bjpowernode.crm.commons.pojo.ReturnWithCustomers;
@@ -7,6 +8,7 @@ import com.bjpowernode.crm.commons.util.DateUtil;
 import com.bjpowernode.crm.commons.util.PrimaryUtil;
 import com.bjpowernode.crm.mapper.workbench.CustomerRemarkMapper;
 import com.bjpowernode.crm.mapper.workbench.TransactionMapper;
+import com.bjpowernode.crm.mapper.workbench.TransactionRemarkMapper;
 import com.bjpowernode.crm.pojo.User;
 import com.bjpowernode.crm.pojo.settings.DicValue;
 import com.bjpowernode.crm.pojo.workbench.*;
@@ -44,6 +46,8 @@ public class CustomerController {
     private ContactsActivityRelationService contactsActivityRelationService;
     @Autowired
     private DicValueService dicValueService;
+    @Autowired
+    private TransactionHistoryService transactionHistoryService;
     @RequestMapping("/customer/index.do")
     public String index(HttpServletRequest request){
         List<User> users = userService.querySurvival();
@@ -129,9 +133,19 @@ public class CustomerController {
     }
     @RequestMapping("/customer/detail.do")
     public String detail(String id,HttpServletRequest request){
+        //获取可能性配置文件
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("possibility");
         Customer customer = customerService.selectOneById(id);
         List<Contacts> contactList = contactsService.selectByCustomerId(id);
-        List<Transaction> transactionList = transactionService.selectOneByCustomerId(id);
+        //查询transactions并计算可能性后封装为List<Map>
+        List<Transaction> transactions = transactionService.selectOneByCustomerId(id);
+        List<Map<String,Object>> transactionList = new ArrayList<>();
+        transactions.forEach(transaction -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("possibility",resourceBundle.getString(transaction.getStage()));
+            map.put("transaction",transaction);
+            transactionList.add(map);
+        });
         List<CustomerRemark> remarkList = customerRemarkService.selectByCustomerId(id);
         remarkList.forEach(remark->{
             if("0".equals(remark.getEditFlag())){
@@ -140,6 +154,7 @@ public class CustomerController {
             }
         });
         List<User> users = userService.querySurvival();
+        //查询字典值
         List<DicValue> dicValueList = dicValueService.selectAllDicValue();
         List<DicValue> appellation = new ArrayList<>();
         List<DicValue> source = new ArrayList<>();
@@ -208,6 +223,49 @@ public class CustomerController {
         }catch (Exception e){
             e.printStackTrace();
             returnMessage.setCode(Return_Object_Code_Fail);
+        }
+        return returnMessage;
+    }
+    @ResponseBody
+    @RequestMapping({"/customer/selectCustomerForContact.do","/customer/queryCustomerName.do"})
+    public Object selectCustomerForTran(String name){
+        List<String> list = customerService.selectByName(name);
+        return list;
+    }
+    @ResponseBody
+    @RequestMapping("/customer/createContact.do")
+    public Object createContact(Contacts contacts,HttpServletRequest request){
+        String user =((User)request.getSession().getAttribute("user")).getId();
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.setCode(Return_Object_Code_Success);
+        Contacts contacts1 = customerService.customerCreateContact(contacts, user);
+        if(contacts1==null){
+            returnMessage.setCode(Return_Object_Code_Fail);
+            return returnMessage;
+        }
+        return contacts1;
+    }
+    @ResponseBody
+    @RequestMapping("/customer/deleteContact.do")
+    public Object deleteContact(String id){
+        int i = contactsService.deleteByPrimaryKey(id);
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.setCode(Return_Object_Code_Success);
+        if(i!=1){
+            returnMessage.setCode(Return_Object_Code_Fail);
+            returnMessage.setMessage("系统忙请稍后");
+        }
+        return returnMessage;
+    }
+    @ResponseBody
+    @RequestMapping("/customer/deleteTransaction.do")
+    public Object deleteTransaction(String id){
+        //删除交易要先删除与其相关的备注和历史记录,要用到事物所以放在service同时执行
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.setCode(Return_Object_Code_Success);
+        if(!transactionService.deleteTransactionAndBelongById(id)){
+            returnMessage.setCode(Return_Object_Code_Fail);
+            returnMessage.setMessage("系统繁忙，请稍后");
         }
         return returnMessage;
     }

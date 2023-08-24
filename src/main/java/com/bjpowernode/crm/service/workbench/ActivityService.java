@@ -33,4 +33,10 @@ public interface ActivityService {
     List<Activity> selectForClue(String id,String name);
 
     List<Activity> selectActivityByNameAndClueId(String name,String id);
+
+    List<Activity> selectActivityByName(String name);
+
+    List<Activity> selectByContactsId(String id);
+    List<Activity> selectNotByContactsId(String id);
+    String selectNameById(String id);
 }

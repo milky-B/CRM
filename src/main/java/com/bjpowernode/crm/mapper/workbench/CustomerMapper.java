@@ -26,4 +26,10 @@ public interface CustomerMapper {
     /*
     * customer-detail*/
     Customer selectOneById(String id);
+
+    /*selectCustomerNameForCustomerNewContact*/
+    List<String> selectByName(String name);
+
+    /*Customer-createContact selectIdByCustomerName*/
+    String selectIdByCustomerName(String name);
 }

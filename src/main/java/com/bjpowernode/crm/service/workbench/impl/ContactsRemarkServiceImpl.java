@@ -6,6 +6,7 @@ import com.bjpowernode.crm.service.workbench.ContactsRemarkService;
 import com.bjpowernode.crm.service.workbench.ContactsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,5 +28,36 @@ public class ContactsRemarkServiceImpl implements ContactsRemarkService {
             return;
         }
         contactsRemarkMapper.deleteByContactsIds(list);
+    }
+
+    @Override
+    public List<ContactsRemark> selectRemarkByContactsId(String id) {
+        return contactsRemarkMapper.selectRemarkByContactsId(id);
+    }
+
+    @Override
+    public int insertRemark(ContactsRemark contactsRemark) {
+        return contactsRemarkMapper.insert(contactsRemark);
+    }
+
+    @Override
+    public ContactsRemark selectRemarkById(String id) {
+        return contactsRemarkMapper.selectRemarkById(id);
+    }
+
+    @Override
+    public int deleteByPrimaryId(String id) {
+        return contactsRemarkMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public int updateRemarkByPrimaryKey(ContactsRemark contactsRemark) {
+        return contactsRemarkMapper.updateRemarkByPrimaryKey(contactsRemark);
+    }
+
+    @Override
+    @Transactional
+    public int deleteByContactsId(String[] ids) {
+        return contactsRemarkMapper.deleteByContactsId(ids);
     }
 }

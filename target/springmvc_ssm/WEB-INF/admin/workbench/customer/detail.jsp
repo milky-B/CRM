@@ -4,10 +4,16 @@
 <head>
 	<base href="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/">
 <meta charset="UTF-8">
+	<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+	<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
 
-<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+	<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+
+	<script type="text/javascript" src="jquery/bs_typeahead/bootstrap3-typeahead.min.js"></script>
 
 <script type="text/javascript">
 
@@ -15,6 +21,7 @@
 	var cancelAndSaveBtnDefault = true;
 	
 	$(function(){
+
 		$(".mydate").datetimepicker({
 			language:'zh-CN',
 			format:'yyyy-mm-dd',
@@ -57,6 +64,7 @@
 			$("#remarkForm").get(0).reset();
 		});
 		$("#saveRemarkBtn").click(function (){
+
 			let customerId = '${requestScope.customer.id}'
 			let noteContent = $.trim($("#remark").val());
 			$.ajax({
@@ -142,7 +150,129 @@
 			$("#createContactsModalForm").get(0).reset();
 			$("#createContactsModal").modal("show");
 		});
+		$("#create-customerName").typeahead({
+			source:function (query,process) {
+				$.ajax({
+					url:"workbench/customer/selectCustomerForContact.do",
+					data:{
+						name:query
+					},
+					type:"post",
+					dataType:"json",
+					success:function (data) {
+						process(data);
+					}
+				});
+			}
+		});
+		$("#saveContactBtn").click(function (){
+			let owner = $("#create-contactsOwner").val()
+			let source = $("#create-clueSource").val()
+			let customerId = $("#create-customerName").val()
+			let fullname = $.trim($("#create-surname").val())
+			let appellation = $("#create-call").val()
+			let email = $.trim($("#create-email").val())
+			let mphone = $("#create-mphone").val()
+			let job = $.trim($("#create-job").val())
+			let description = $.trim($("#create-describe").val())
+			let contactSummary = $.trim($("#edit-contactSummary").val())
+			let nextContactTime = $("#edit-nextContactTime").val()
+			let address = $.trim($("#edit-address1").val())
 
+			if(customerId==null||customerId==""){
+				alert("公司名不能为空");
+				return;
+			}
+			if(fullname==null||fullname==""){
+				alert("名字不能为空");
+				return;
+			}
+			if(email!=null&&email!="" && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)){
+				alert("邮箱格式不对");
+				return;
+			}
+			if(mphone!=null&&mphone!=""&&!/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(mphone)){
+				alert("检查手机号码格式");
+				return;
+			}
+			$.ajax({
+				url:"workbench/customer/createContact.do",
+				type:'post',
+				dataType:'json',
+				data:{
+					owner:owner,
+					customerId:customerId,
+					appellation:appellation,
+					fullname:fullname,
+					job:job,
+					email:email,
+					source:source,
+					description:description,
+					contactSummary:contactSummary,
+					nextContactTime:nextContactTime,
+					address:address,
+					mphone:mphone
+				},
+				success:function (contact){
+					if(contact.code=="0"){
+						alert("添加失败");
+						return;
+					}
+					html="";
+					html+="<tr id=\"tr_"+contact.id+"\"><td><a href=\"workbench/contacts/detail.do?id="+contact.id+"\" style=\"text-decoration: none;\">"+contact.fullname+contact.appellation+"</a></td>"
+					html+="<td>"+contact.email+"</td>"
+					html+="<td>"+contact.mphone+"</td>"
+					html+="<td><a href=\"javascript:void(0);\" btn-id=\"deleteContactBtn\" value=\""+contact.id+"\" style=\"text-decoration: none;\"><span class=\"glyphicon glyphicon-remove\"></span>删除</a></td></tr>"
+					$("#contactsBody").append(html);
+					$("#createContactsModal").modal("hide");
+				}
+			});
+		});
+		$("#contactsBody").on("click","a[btn-id=deleteContactBtn]",function (){
+			let id = $(this).attr("value");;
+			$("#contactId").val(id);
+			$("#removeContactsModal").modal("show");
+		});
+		$("#toDeleteBtn").click(function (){
+			let id = $("#contactId").val();
+			$.ajax({
+				url:'workbench/customer/deleteContact.do',
+				data:{
+					id:id
+				},
+				type:'post',
+				dataType:'json',
+				success:function (response){
+					if(response.code=="0"){
+						alert(response.message);
+					}
+					$("#tr_"+id).remove();
+					$("#removeContactsModal").modal("hide");
+				}
+			})
+		});
+		$("#transactionBody").on('click','a[btn-id=deleteTransactionId]',function (){
+			$("#tranId").val($(this).attr("tran-id"));
+			$("#removeTransactionModal").modal("show");
+		});
+		$("#toDeleteTransactionBtn").click(function (){
+			let tranId = $("#tranId").val();
+			$.ajax({
+				url:'workbench/customer/deleteTransaction.do',
+				type:'get',
+				data:{
+					id:tranId
+				},
+				dataType:'json',
+				success:function (responseText){
+					if(responseText.code=="0"){
+						alert(responseText.message);
+					}
+					$("#tr_"+tranId).remove();
+					$("#removeTransactionModal").modal("hide");
+				}
+			})
+		});
 	});
 	
 </script>
@@ -180,6 +310,7 @@
 
 	<!-- 删除联系人的模态窗口 -->
 	<div class="modal fade" id="removeContactsModal" role="dialog">
+		<input type="hidden" id="contactId">
 		<div class="modal-dialog" role="document" style="width: 30%;">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -193,7 +324,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-danger" data-dismiss="modal">删除</button>
+					<button type="button" class="btn btn-danger" id="toDeleteBtn">删除</button>
 				</div>
 			</div>
 		</div>
@@ -201,6 +332,7 @@
 
     <!-- 删除交易的模态窗口 -->
     <div class="modal fade" id="removeTransactionModal" role="dialog">
+		<input type="hidden" id="tranId">
         <div class="modal-dialog" role="document" style="width: 30%;">
             <div class="modal-content">
                 <div class="modal-header">
@@ -214,133 +346,132 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">删除</button>
+                    <button type="button" id="toDeleteTransactionBtn">删除</button>
                 </div>
             </div>
         </div>
     </div>
 	
 	<!-- 创建联系人的模态窗口 -->
-	<div class="modal fade" id="createContactsModal" role="dialog">
-		<div class="modal-dialog" role="document" style="width: 90%;">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">
-						<span aria-hidden="true">×</span>
-					</button>
-					<h4 class="modal-title" id="myModalLabel1">创建联系人</h4>
-				</div>
-				<div class="modal-body">
-					<form id="createContactsModalForm" class="form-horizontal" role="form">
-						
+<!-- 创建联系人的模态窗口 -->
+<div class="modal fade" id="createContactsModal" role="dialog">
+	<div class="modal-dialog" role="document" style="width: 85%;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" onclick="$('#createContactsModal').modal('hide');">
+					<span aria-hidden="true">×</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel1">创建联系人</h4>
+			</div>
+			<div class="modal-body">
+				<form id="createContactsModalForm" class="form-horizontal" role="form">
 
-						<div class="form-group">
-							<label for="create-contactsOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
-							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-contactsOwner">
-									<c:forEach items="${requestScope.users}" var="user">
-										<option  value="${user.id}">${user.name}</option>
-									</c:forEach>
-								</select>
-							</div>
-							<label for="create-clueSource" class="col-sm-2 control-label">来源</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-clueSource">
-									<option></option>
-									<c:forEach items="${requestScope.source}" var="s">
+					<div class="form-group">
+						<label for="create-contactsOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
+						<div class="col-sm-10" style="width: 300px;">
+							<select class="form-control" id="create-contactsOwner">
+								<c:forEach items="${requestScope.users}" var="user">
+									<option  value="${user.id}">${user.name}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<label for="create-clueSource" class="col-sm-2 control-label">来源</label>
+						<div class="col-sm-10" style="width: 300px;">
+							<select class="form-control" id="create-clueSource">
+								<option></option>
+								<c:forEach items="${requestScope.source}" var="s">
 									<option value="${s.id}">${s.value}</option>
-									</c:forEach>
-							</div>
+								</c:forEach>
+							</select>
 						</div>
-						<div class="form-group">
-							<label for="create-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
-							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-surname">
-							</div>
-							<label for="create-call" class="col-sm-2 control-label">称呼</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-call">
-									<option></option>
-									<c:forEach items="${requestScope.appellation}" var="a">
-										<option value="${a.id}">${a.value}</option>
-									</c:forEach>
-								</select>
-							</div>
+					</div>
 
+					<div class="form-group">
+						<label for="create-surname" class="col-sm-2 control-label">姓名<span style="font-size: 15px; color: red;">*</span></label>
+						<div class="col-sm-10" style="width: 300px;">
+							<input type="text" class="form-control" id="create-surname">
 						</div>
+						<label for="create-call" class="col-sm-2 control-label">称呼</label>
+						<div class="col-sm-10" style="width: 300px;">
+							<select class="form-control" id="create-call">
+								<option></option>
+								<c:forEach items="${requestScope.appellation}" var="a">
+									<option value="${a.id}">${a.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						<label for="create-job" class="col-sm-2 control-label">职位</label>
+						<div class="col-sm-10" style="width: 300px;">
+							<input type="text" class="form-control" id="create-job">
+						</div>
+						<label for="create-mphone" class="col-sm-2 control-label">手机</label>
+						<div class="col-sm-10" style="width: 300px;">
+							<input type="text" class="form-control" id="create-mphone">
+						</div>
+					</div>
+
+					<div class="form-group" style="position: relative;">
+						<label for="create-email" class="col-sm-2 control-label">邮箱</label>
+						<div class="col-sm-10" style="width: 300px;">
+							<input type="text" class="form-control" id="create-email">
+						</div>
+					</div>
+
+					<div class="form-group" style="position: relative;">
+						<label for="create-customerName" class="col-sm-2 control-label">客户名称</label>
+						<div class="col-sm-10" style="width: 300px;">
+							<input type="text" class="form-control" id="create-customerName" placeholder="支持自动补全，输入客户不存在则新建">
+						</div>
+					</div>
+
+					<div class="form-group" style="position: relative;">
+						<label for="create-describe" class="col-sm-2 control-label">描述</label>
+						<div class="col-sm-10" style="width: 81%;">
+							<textarea class="form-control" rows="3" id="create-describe"></textarea>
+						</div>
+					</div>
+
+					<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative;"></div>
+
+					<div style="position: relative;top: 15px;">
 						<div class="form-group">
-							<label for="create-job" class="col-sm-2 control-label">职位</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-job">
-							</div>
-							<label for="create-mphone" class="col-sm-2 control-label">手机</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-mphone">
-							</div>
-						</div>
-						
-						<div class="form-group" style="position: relative;">
-							<label for="create-email" class="col-sm-2 control-label">邮箱</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-email">
-							</div>
-							<label for="create-birth" class="col-sm-2 control-label">生日</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-birth">
-							</div>
-						</div>
-						
-						<%--<div class="form-group" style="position: relative;">
-							<label for="create-customerName" class="col-sm-2 control-label">客户名称</label>
-							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-customerName" placeholder="支持自动补全，输入客户不存在则新建">
-							</div>
-						</div>--%>
-						
-						<div class="form-group" style="position: relative;">
-							<label for="create-describe" class="col-sm-2 control-label">描述</label>
+							<label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="create-describe"></textarea>
+								<textarea class="form-control" rows="3" id="edit-contactSummary"></textarea>
 							</div>
 						</div>
-						
-						<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative;"></div>
+						<div class="form-group">
+							<label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
+							<div class="col-sm-10" style="width: 300px;">
+								<input type="text" class="form-control mydate" id="edit-nextContactTime">
+							</div>
+						</div>
+					</div>
 
-                        <div style="position: relative;top: 15px;">
-                            <div class="form-group">
-                                <label for="edit-contactSummary" class="col-sm-2 control-label">联系纪要</label>
-                                <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="3" id="edit-contactSummary"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-nextContactTime" class="col-sm-2 control-label">下次联系时间</label>
-                                <div class="col-sm-10" style="width: 300px;">
-                                    <input type="text" class="form-control mydate" id="edit-nextContactTime" value="2017-05-01">
-                                </div>
-                            </div>
-                        </div>
+					<div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative; top : 10px;"></div>
 
-                        <div style="height: 1px; width: 103%; background-color: #D5D5D5; left: -13px; position: relative; top : 10px;"></div>
+					<div style="position: relative;top: 20px;">
+						<div class="form-group">
+							<label for="edit-address1" class="col-sm-2 control-label">详细地址</label>
+							<div class="col-sm-10" style="width: 81%;">
+								<textarea class="form-control" rows="1" id="edit-address1"></textarea>
+							</div>
+						</div>
+					</div>
+				</form>
 
-                        <div style="position: relative;top: 20px;">
-                            <div class="form-group">
-                                <label for="edit-address1" class="col-sm-2 control-label">详细地址</label>
-                                <div class="col-sm-10" style="width: 81%;">
-                                    <textarea class="form-control" rows="1" id="edit-address1"></textarea>
-                                </div>
-                            </div>
-                        </div>
-					</form>
-					
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
-				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="saveContactBtn" type="button" >保存</button>
 			</div>
 		</div>
 	</div>
+</div>
 
 
 	<!-- 返回按钮 -->
@@ -477,16 +608,17 @@
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
-					<c:forEach items="${requestScope.transactionList}" var="transaction">
-						<tr>
-							<td><a href="workbench/transaction/detail.html?id=${transaction.id}" style="text-decoration: none;">${transaction.name}</a></td>
-							<td>${transaction.money}</td>
-							<td>${transaction.stage}</td>
-							<td>99</td>
-							<td>${transaction.expectedDate}</td>
-							<td>${transaction.type}</td>
-							<td><a href="javascript:void(0);" data-toggle="modal" data-target="#removeTransactionModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
+					<tbody id="transactionBody">
+
+					<c:forEach items="${requestScope.transactionList}" var="trade">
+						<tr id="tr_${trade.transaction.id}">
+							<td><a href="workbench/transaction/detail.html?id=${trade.transaction.id}" style="text-decoration: none;">${trade.transaction.name}</a></td>
+							<td>${trade.transaction.money}</td>
+							<td>${trade.transaction.stage}</td>
+							<td>${trade.possibility}</td>
+							<td>${trade.transaction.expectedDate}</td>
+							<td>${trade.transaction.type}</td>
+							<td><a href="javascript:void(0);" tran-id="${trade.transaction.id}" btn-id="deleteTransactionId" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
 						</tr>
 					</c:forEach>
 
@@ -495,7 +627,7 @@
 			</div>
 			
 			<div>
-				<a href="../transaction/save.html" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
+				<a href="workbench/transaction/save.do?back=1" style="text-decoration: none;"><span class="glyphicon glyphicon-plus"></span>新建交易</a>
 			</div>
 		</div>
 	</div>
@@ -516,13 +648,15 @@
 							<td></td>
 						</tr>
 					</thead>
-					<tbody>
+
+					<tbody id="contactsBody">
+
 					<c:forEach items="${requestScope.contactList}" var="contact">
-						<tr>
+						<tr id="tr_${contact.id}">
 							<td><a href="workbench/contacts/detail.do?id=${contact.id}" style="text-decoration: none;">${contact.fullname}${contact.appellation}</a></td>
 							<td>${contact.email}</td>
 							<td>${contact.mphone}</td>
-							<td><a href="javascript:void(0);" data-toggle="modal" data-target="#removeContactsModal" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
+							<td><a href="javascript:void(0);" value="${contact.id}" btn-id="deleteContactBtn" style="text-decoration: none;"><span class="glyphicon glyphicon-remove"></span>删除</a></td>
 						</tr>
 					</c:forEach>
 					</tbody>

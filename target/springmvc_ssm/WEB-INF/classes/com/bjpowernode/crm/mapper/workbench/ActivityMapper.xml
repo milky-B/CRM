@@ -44,11 +44,10 @@
     where id = #{id,jdbcType=CHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select a.id, u.name as owner, a.name, start_date, end_date, cost, description, a.create_time, a.create_by,
+    select a.id, owner, a.name, start_date, end_date, cost, description, a.create_time, a.create_by,
            a.edit_time, a.edit_by
     from t_activity a
-    join t_user u on u.id=a.owner
-    where id = #{id,jdbcType=CHAR}
+    where a.id = #{id,jdbcType=CHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
     select a.id, u.name as owner, a.name, start_date, end_date
@@ -182,5 +181,37 @@
     <if test="name!=null and name!=''">
       and a.name like concat('%',#{name},'%')
     </if>
+  </select>
+  <select id="selectActivityByName">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on a.owner=u.id
+    <where>
+      <if test="name!=null and name!=''">
+        and a.name like concat('%',#{name},'%')
+      </if>
+    </where>
+  </select>
+  <select id="selectByContactsId">
+    select car.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on a.owner=u.id
+    join t_contacts_activity_relation car on car.activity_id=a.id
+    where car.contacts_id=#{id}
+  </select>
+  <select id="selectNotInContactsId">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+           join t_user u on a.owner=u.id
+    where a.id not in (
+      select activity_id
+      from t_contacts_activity_relation
+      where contacts_id=#{id}
+    )
+  </select>
+  <select id="selectActivityNameById">
+    select name
+    from t_activity
+    where id = #{id}
   </select>
 </mapper>

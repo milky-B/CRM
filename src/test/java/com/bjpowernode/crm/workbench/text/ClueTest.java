@@ -109,4 +109,13 @@ public class ClueTest {
         o=b;
         System.out.println(o);
     }
+    @Test
+    public void testSelectTransactionsByConditions(){
+
+    }
+    @Test
+    public void testSelectAll(){
+        transactionMapper.selectAll();
+    }
+
 }

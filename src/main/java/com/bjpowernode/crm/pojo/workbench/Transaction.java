@@ -37,6 +37,27 @@ public class Transaction {
 
     private String nextContactTime;
 
+    //扩展属性用于存储可能性
+    private String possibility;
+    //扩张属性用于存储阶段值
+    private String StageNo;
+
+    public String getStageNo() {
+        return StageNo;
+    }
+
+    public void setStageNo(String stageValue) {
+        StageNo = stageValue;
+    }
+
+    public String getPossibility() {
+        return possibility;
+    }
+
+    public void setPossibility(String possibility) {
+        this.possibility = possibility;
+    }
+
     public String getId() {
         return id;
     }

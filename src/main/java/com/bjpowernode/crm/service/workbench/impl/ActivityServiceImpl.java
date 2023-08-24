@@ -87,4 +87,24 @@ public class ActivityServiceImpl implements ActivityService {
     public List<Activity> selectActivityByNameAndClueId(String name,String id) {
         return activityMapper.selectActivityByNameAndClueId(name,id);
     }
+
+    @Override
+    public List<Activity> selectActivityByName(String name) {
+        return activityMapper.selectActivityByName(name);
+    }
+
+    @Override
+    public List<Activity> selectByContactsId(String id) {
+        return activityMapper.selectByContactsId(id);
+    }
+
+    @Override
+    public List<Activity> selectNotByContactsId(String id) {
+        return activityMapper.selectNotInContactsId(id);
+    }
+
+    @Override
+    public String selectNameById(String id) {
+        return activityMapper.selectActivityNameById(id);
+    }
 }

@@ -118,4 +118,14 @@
     left join t_user u2 on u2.id=c.edit_by
     where c.id = #{id}
   </select>
+  <select id="selectByName">
+    select name
+    from t_customer
+    where name like concat('%',#{name},'%')
+  </select>
+  <select id="selectIdByCustomerName">
+    select id
+    from t_customer
+    where name = #{name}
+  </select>
 </mapper>

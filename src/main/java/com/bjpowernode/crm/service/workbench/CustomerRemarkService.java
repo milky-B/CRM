@@ -12,4 +12,5 @@ public interface CustomerRemarkService {
     CustomerRemark selectByPrimaryKey(String id);
     int deleteByPrimaryId(String id);
     int updateOne(CustomerRemark customerRemark);
+
 }

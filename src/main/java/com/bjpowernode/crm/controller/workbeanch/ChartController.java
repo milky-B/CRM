@@ -20,6 +20,6 @@ public class ChartController {
     }
     @RequestMapping("/chart/transaction/index.do")
     public String transaction(){
-        return "workbench/chart/transactionchart/index";
+        return "workbench/chart/transaction/index";
     }
 }

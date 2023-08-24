@@ -36,4 +36,16 @@ public interface ActivityMapper {
     List<Activity> selectForClue(@Param("id")String id,@Param("name")String name);
 
     List<Activity> selectActivityByNameAndClueId(@Param("name")String name,@Param("id")String id);
+
+    /*通过名字模糊查询*/
+    List<Activity> selectActivityByName(String name);
+
+    /*id
+    contacts_activity_relation_id
+    查询客户表相关联的活动*/
+    List<Activity> selectByContactsId(String id);
+    /*查询联系人未关联的活动*/
+    List<Activity> selectNotInContactsId(String id);
+
+    String selectActivityNameById(String id);
 }

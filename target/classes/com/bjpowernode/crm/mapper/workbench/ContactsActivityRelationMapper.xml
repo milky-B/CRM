@@ -6,7 +6,7 @@
     <result column="contacts_id" jdbcType="CHAR" property="contactsId" />
     <result column="activity_id" jdbcType="CHAR" property="activityId" />
   </resultMap>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+  <delete id="deleteByActivityId" parameterType="java.lang.String">
     delete from t_contacts_activity_relation
     where id = #{id,jdbcType=CHAR}
   </delete>
@@ -44,4 +44,11 @@
       #{id}
     </foreach>
   </delete>
+  <insert id="insertContacts">
+    insert t_contacts_activity_relation
+    values
+    <foreach collection="list" item="l" separator=",">
+      (#{l.id},#{l.contactsId},#{l.activityId})
+    </foreach>
+  </insert>
 </mapper>

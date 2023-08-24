@@ -53,4 +53,8 @@
       #{remark.editFlag,jdbcType=CHAR}, #{remark.tranId,jdbcType=CHAR})
     </foreach>
   </insert>
+  <delete id="deleteByTransactionId">
+    delete from t_tran_remark
+    where tran_id = #{id}
+  </delete>
 </mapper>

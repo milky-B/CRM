@@ -10,6 +10,7 @@ import com.bjpowernode.crm.service.workbench.ClueService;
 import com.bjpowernode.crm.service.workbench.TransactionRemarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,5 +41,11 @@ public class TransactionRemarkServiceImpl implements TransactionRemarkService {
             transactionRemarks.add(transactionRemark);
         });
         transactionRemarkMapper.insertRemarks(transactionRemarks);
+    }
+
+    @Override
+    @Transactional
+    public int deleteRemarkByTransactionId(String id) {
+        return transactionRemarkMapper.deleteByTransactionId(id);
     }
 }

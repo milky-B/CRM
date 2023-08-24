@@ -17,4 +17,8 @@ public interface TransactionRemarkMapper {
     int updateByPrimaryKey(TransactionRemark row);
 
     int insertRemarks(@Param("remarks")List<TransactionRemark> transactionRemarks);
+
+    /*
+    * 删除 通过交易id*/
+    int deleteByTransactionId(String id);
 }

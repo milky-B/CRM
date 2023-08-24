@@ -1,5 +1,6 @@
 package com.bjpowernode.crm.service.workbench;
 
+import com.bjpowernode.crm.pojo.workbench.Contacts;
 import com.bjpowernode.crm.pojo.workbench.Customer;
 
 import java.util.List;
@@ -13,5 +14,8 @@ public interface CustomerService {
     int updateByPrimary(Customer customer);
     int deleteByKeys(String[] list);
     Customer selectOneById(String id);
+    List<String> selectByName(String name);
+    String selectIdByName(String name);
+    Contacts customerCreateContact(Contacts contacts, String user);
 }
 

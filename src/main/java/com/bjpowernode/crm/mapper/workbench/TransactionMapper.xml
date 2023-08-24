@@ -51,8 +51,6 @@
       source = #{source,jdbcType=VARCHAR},
       activity_id = #{activityId,jdbcType=CHAR},
       contacts_id = #{contactsId,jdbcType=CHAR},
-      create_by = #{createBy,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=CHAR},
       edit_by = #{editBy,jdbcType=VARCHAR},
       edit_time = #{editTime,jdbcType=CHAR},
       description = #{description,jdbcType=VARCHAR},
@@ -85,8 +83,122 @@
     #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR})
   </insert>
   <select id="selectByCustomerId" resultMap="BaseResultMap">
-    select id, money, name, expected_date, stage, type
-    from t_tran
+    select t.id, money, name, expected_date,v.value as stage,v2.value as type
+    from t_tran t
+    join t_dic_value v on v.id=t.stage
+    left join t_dic_value v2 on v2.id=t.type
     where customer_id = #{id}
+  </select>
+  <select id="selectByContactsId">
+    select t.id, money, name, expected_date,v.value as stage,v2.value as type
+    from t_tran t
+           join t_dic_value v on v.id=t.stage
+           left join t_dic_value v2 on v2.id=t.type
+    where t.contacts_id = #{id}
+  </select>
+  <select id="selectTransactionsByConditions" resultMap="BaseResultMap">
+select t.id,u1.name as owner, t.name,c1.name as customer_id,v1.value as stage,v2.value as type,v3.value as source,c2.fullname as contacts_id
+    from t_tran t
+    join t_user u1 on u1.id=t.owner
+    join t_customer c1 on c1.id=t.customer_id
+    join t_dic_value v1 on v1.id=t.stage
+    left join t_dic_value v2 on v2.id=t.type
+    left join t_dic_value v3 on v3.id=t.source
+    left join t_contacts c2 on c2.id=t.contacts_id
+    <where>
+      <if test="owner!=null and owner!=''">
+        and u1.name like concat('%',#{owner},'%')
+      </if>
+      <if test="customerName!=null and customerName!=''">
+        and c1.name like concat('%',#{customerName},'%')
+      </if>
+      <if test="name!=null and name!=''">
+        and t.name like concat('%',#{name},'%')
+      </if>
+      <if test="stage!=null and stage!=''">
+        and t.stage = #{stage}
+      </if>
+      <if test="type!=null and type!=''">
+        and t.type = #{type}
+      </if>
+      <if test="source!=null and source!=''">
+        and t.source = #{source}
+      </if>
+      <if test="contactsId!=null and contactsId!=''">
+        and c2.fullname like concat('%',#{contactsId},'%')
+      </if>
+    </where>
+    order by t.create_time asc
+    limit #{startRow},#{count}
+  </select>
+  <select id="countTransactionByConditons">
+    select count(*)
+    from t_tran t
+    join t_user u1 on u1.id=t.owner
+    join t_customer c1 on c1.id=t.customer_id
+    join t_dic_value v1 on v1.id=t.stage
+    left join t_dic_value v2 on v2.id=t.type
+    left join t_dic_value v3 on v3.id=t.source
+    left join t_contacts c2 on c2.id=t.contacts_id
+    <where>
+      <if test="owner!=null and owner!=''">
+        and u1.name like concat('%',#{owner},'%')
+      </if>
+      <if test="customerName!=null and customerName!=''">
+        and c1.name like concat('%',#{customerName},'%')
+      </if>
+      <if test="name!=null and name!=''">
+        and t.name like concat('%',#{name},'%')
+      </if>
+      <if test="stage!=null and stage!=''">
+        and t.stage = #{stage}
+      </if>
+      <if test="type!=null and type!=''">
+        and t.type = #{type}
+      </if>
+      <if test="source!=null and source!=''">
+        and t.id = #{source}
+      </if>
+      <if test="contactsId!=null and contactsId!=''">
+        and c2.fullname like concat('%',#{contactsId},'%')
+      </if>
+    </where>
+  </select>
+  <delete id="deleteTranBatch">
+    delete from t_tran
+    where id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+  <select id="selectOneByPrimaryKey" resultMap="BaseResultMap">
+    select t.id,t.owner, t.name,c1.name as customer_id,money,t.expected_date,t.stage,type,t.source,contacts_id,
+      t.activity_id,t.description, t.contact_summary,t.next_contact_time
+    from t_tran t
+        join t_customer c1 on c1.id=t.customer_id
+        left join t_activity a on a.id=t.activity_id
+        left join t_contacts c2 on c2.id=t.contacts_id
+    where t.id=#{id}
+  </select>
+  <select id="selectTranByPrimaryKey">
+    select t.id,u2.name as owner, t.name,c1.name as customer_id,money,t.expected_date,v.value as stage,v.order_no as StageNo,v3.value as type,v2.value as source,c2.fullname as contacts_id,
+           a.name as activity_id,u1.name as create_by, t.create_time,u3.name as edit_by, t.edit_time,t.description, t.contact_summary,t.next_contact_time
+    from t_tran t
+        join t_customer c1 on c1.id=t.customer_id
+        join t_user u1 on u1.id=t.create_by
+        join t_user u2 on u2.id=t.owner
+        left join t_user u3 on u3.id=t.edit_by
+        left join t_activity a on a.id=t.activity_id
+        left join t_contacts c2 on c2.id=t.contacts_id
+        left join t_dic_value v on v.id = t.stage
+        left join t_dic_value v2 on v2.id=t.source
+        left join t_dic_value v3 on v3.id=t.type
+    where t.id=#{id}
+  </select>
+  <select id="selectFunnelByStage" resultType="funnel">
+    select count(*) as value,v.value as name
+    from t_tran t
+    join t_dic_value v on v.id=t.stage
+    group by t.stage
   </select>
 </mapper>

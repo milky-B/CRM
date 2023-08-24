@@ -9,4 +9,8 @@ public class WorkbenchController {
     public String index(){
         return "workbench/index";
     }
+    @RequestMapping("workbench/main/index.do")
+    public String main(){
+        return "workbench/main/index";
+    }
 }
