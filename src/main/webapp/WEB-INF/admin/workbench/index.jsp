@@ -1,13 +1,14 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
 	<base href="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/">
 	<meta charset="UTF-8">
+	<link rel="shortcut icon" href="image/favicon.ico">
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-
 	//页面加载完毕
 	$(function(){
 		
@@ -37,6 +38,11 @@
 		$("#exitButton").click(function (){
 			window.location.href="settings/qx/user/exit.do"
 		});
+
+
+
+
+
 	});
 	
 </script>
@@ -136,7 +142,7 @@
 	<!-- 顶部 -->
 	<div id="top" style="height: 50px; background-color: #3C3C3C; width: 100%;">
 		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">CRM &nbsp;<span style="font-size: 12px;">&copy;2023&nbsp;milky </span></div>
-		<div style="position: absolute; top: 15px; right: 40px;">
+		<div style="position: absolute; top: 15px; right: 100px;">
 			<ul>
 				<li class="dropdown user-dropdown">
 					<a href="javascript:void(0)" style="text-decoration: none; color: white;" class="dropdown-toggle" data-toggle="dropdown">
@@ -158,8 +164,40 @@
 	
 		<!-- 导航 -->
 		<div id="navigation" style="left: 0px; width: 18%; position: relative; height: 100%; overflow:auto;">
-		
 			<ul id="no1" class="nav nav-pills nav-stacked">
+				<c:forEach var="menu" items="${menus}">
+					<li class="liClass">
+						<c:choose>
+							<c:when test="${not empty menu.children}">
+								<a href="#${menu.id}" class="collapsed" data-toggle="collapse">
+									<span class="glyphicon ${menu.icon}"></span> ${menu.name}
+								</a>
+								<ul id="${menu.id}" class="nav nav-pills nav-stacked collapse">
+									<c:forEach var="child" items="${menu.children}">
+										<li class="liClass">
+											<a href="${child.path}" target="workareaFrame">
+												<span class="glyphicon ${child.icon}"></span> ${child.name}
+											</a>
+										</li>
+									</c:forEach>
+								</ul>
+							</c:when>
+							<c:otherwise>
+								<a href="${menu.path}" target="workareaFrame">
+									<span class="glyphicon ${menu.icon}"></span> ${menu.name}
+								</a>
+							</c:otherwise>
+						</c:choose>
+					</li>
+				</c:forEach>
+				<%--<li class="liClass">
+                    <a href="" target="workareaFrame"><span class="glyphicon glyphicon-th-large"></span> 系统管理</a>
+                    <ul id="no3" class="nav nav-pills nav-stacked collapse">
+                        <li class="liClass"><a href="javascript:void(0);" target="workareaFrame">&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-user"></span> 用户管理</a></li>
+                        <li class="liClass"><a href="javascript:void(0);" target="workareaFrame">&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-manage"></span> 角色管理</a></li>
+                        <li class="liClass"><a href="javascript:void(0);" target="workareaFrame">&nbsp;&nbsp;&nbsp;<span class="glyphicon glyphicon-align-justify"></span> 菜单管理 </a></li>
+                    </ul>
+                </li>
 				<li class="liClass"><a href="workbench/main/index.do" target="workareaFrame"><span class="glyphicon glyphicon-home"></span> 工作台</a></li>
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-tag"></span> 动态</a></li>
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-time"></span> 审批</a></li>
@@ -169,7 +207,7 @@
 				<li class="liClass"><a href="workbench/customer/index.do" target="workareaFrame"><span class="glyphicon glyphicon-user"></span> 客户</a></li>
 				<li class="liClass"><a href="workbench/contacts/index.do" target="workareaFrame"><span class="glyphicon glyphicon-earphone"></span> 联系人</a></li>
 				<li class="liClass"><a href="workbench/transaction/index.do" target="workareaFrame"><span class="glyphicon glyphicon-usd"></span> 交易（商机）</a></li>
-				<li class="liClass"><a href="workbench/visit/index.html" target="workareaFrame"><span class="glyphicon glyphicon-phone-alt"></span> 售后回访</a></li>
+				<li class="liClass"><a href="workbench/visit/index.jsp" target="workareaFrame"><span class="glyphicon glyphicon-phone-alt"></span> 售后回访</a></li>
 				<li class="liClass">
 					<a href="#no2" class="collapsed" data-toggle="collapse"><span class="glyphicon glyphicon-stats"></span> 统计图表</a>
 					<ul id="no2" class="nav nav-pills nav-stacked collapse">
@@ -185,7 +223,7 @@
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-earphone"></span> 跟进</a></li>
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-leaf"></span> 产品</a></li>
 				<li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span class="glyphicon glyphicon-usd"></span> 报价</a></li>
-			</ul>
+--%>			</ul>
 			
 			<!-- 分割线 -->
 			<div id="divider1" style="position: absolute; top : 0px; right: 0px; width: 1px; height: 100% ; background-color: #B3B3B3;"></div>

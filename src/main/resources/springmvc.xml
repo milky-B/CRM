@@ -5,7 +5,7 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <context:component-scan base-package="com.bjpowernode.crm.controller"/>
+    <context:component-scan base-package="com.gdut.crm.controller"/>
     <!--视图解析器-->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/admin/"/>
@@ -20,7 +20,7 @@
             <mvc:exclude-mapping path="/index"/>
             <mvc:exclude-mapping path="/settings/qx/user/toLogin.do"/>
             <mvc:exclude-mapping path="/settings/qx/user/login.do"/>
-            <bean class="com.bjpowernode.crm.handlerInterceptor.LoginInterceptor"/>
+            <bean class="com.gdut.crm.handlerInterceptor.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 </beans>

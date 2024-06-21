@@ -102,7 +102,7 @@
 	<!-- 顶部 -->
 	<div id="top" style="height: 50px; background-color: #3C3C3C; width: 100%;">
 		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">CRM &nbsp;<span style="font-size: 12px;">&copy;2023&nbsp;milky</span></div>
-		<div style="position: absolute; top: 15px; right: 15px;">
+		<div style="position: absolute; top: 15px; right: 100px;">
 			<ul>
 				<li class="dropdown user-dropdown">
 					<a href="javascript:void(0)" style="text-decoration: none; color: white;" class="dropdown-toggle" data-toggle="dropdown">
@@ -131,7 +131,7 @@
 			<div style="position: relative; width: 33%; height: 50%;">
 				常规
 				<br><br>
-				<a href="javascript:void(0);">个人设置</a>
+				<a href="settings/qx/menu/set.do">个人设置</a>
 			</div>
 			<div style="position: relative; width: 33%; height: 50%;">
 				安全控制

@@ -16,10 +16,10 @@
     <bean class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <property name="dataSource" ref="druidDataSource"/>
-        <property name="typeAliasesPackage" value="com.bjpowernode.crm.pojo"/>
+        <property name="typeAliasesPackage" value="com.gdut.crm.pojo"/>
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.bjpowernode.crm.mapper"/>
+        <property name="basePackage" value="com.gdut.crm.mapper"/>
     </bean>
 </beans>

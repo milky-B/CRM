@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.ClueActivityRelationMapper">
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultType="String">
+    select activity_id
+    from t_clue_activity_relation
+    where clue_id = #{id,jdbcType=CHAR}
+  </select>
+
+  <delete id="deleteByClueId">
+    delete from t_clue_activity_relation
+    where clue_id = #{clueId}
+  </delete>
+</mapper>

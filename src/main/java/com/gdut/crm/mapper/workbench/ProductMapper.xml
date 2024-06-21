@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.ProductMapper">
+
+    <resultMap type="com.gdut.crm.pojo.workbench.Product" id="TProductMap">
+        <result property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="sort" column="sort" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="editBy" column="edit_by" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="VARCHAR"/>
+        <result property="describe" column="describe" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="selectAll" resultMap="TProductMap">
+        select tp.id,tp.name,tp.sort,tp.create_time,tp.modify_time,tu.name as create_by,tp.edit_by,tp.price,tp.describe
+        from t_product tp
+        join t_user tu on tu.id = tp.create_by
+        group by sort
+        limit #{startRow},#{count}
+    </select>
+
+
+</mapper>
+

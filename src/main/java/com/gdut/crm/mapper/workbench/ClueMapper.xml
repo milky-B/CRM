@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.ClueMapper">
+  <resultMap id="BaseResultMap" type="Clue">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="fullname" jdbcType="VARCHAR" property="fullname" />
+    <result column="appellation" jdbcType="VARCHAR" property="appellation" />
+    <result column="owner" jdbcType="CHAR" property="owner" />
+    <result column="company" jdbcType="VARCHAR" property="company" />
+    <result column="job" jdbcType="VARCHAR" property="job" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="website" jdbcType="VARCHAR" property="website" />
+    <result column="mphone" jdbcType="VARCHAR" property="mphone" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
+    <result column="edit_time" jdbcType="CHAR" property="editTime" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="contact_summary" jdbcType="VARCHAR" property="contactSummary" />
+    <result column="next_contact_time" jdbcType="CHAR" property="nextContactTime" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+  </resultMap>
+  <sql id="allColumn">id, fullname, appellation, owner, company, job, email, phone, website, mphone,
+    state, source, create_by, create_time, edit_by, edit_time, description, contact_summary,
+    next_contact_time, address</sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_clue
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="Clue">
+    insert into t_clue (id, fullname, appellation, 
+      owner, company, job, email, 
+      phone, website, mphone, 
+      state, source, create_by, 
+      create_time, edit_by, edit_time, 
+      description, contact_summary, next_contact_time, 
+      address)
+    values (#{id,jdbcType=CHAR}, #{fullname,jdbcType=VARCHAR}, #{appellation,jdbcType=VARCHAR}, 
+      #{owner,jdbcType=CHAR}, #{company,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{website,jdbcType=VARCHAR}, #{mphone,jdbcType=VARCHAR}, 
+      #{state,jdbcType=VARCHAR}, #{source,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
+      #{description,jdbcType=VARCHAR}, #{contactSummary,jdbcType=VARCHAR}, #{nextContactTime,jdbcType=CHAR}, 
+      #{address,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="Clue">
+    update t_clue
+    set fullname = #{fullname,jdbcType=VARCHAR},
+      appellation = #{appellation,jdbcType=VARCHAR},
+      owner = #{owner,jdbcType=CHAR},
+      company = #{company,jdbcType=VARCHAR},
+      job = #{job,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      website = #{website,jdbcType=VARCHAR},
+      mphone = #{mphone,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      source = #{source,jdbcType=VARCHAR},
+      edit_by = #{editBy,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=CHAR},
+      description = #{description,jdbcType=VARCHAR},
+      contact_summary = #{contactSummary,jdbcType=VARCHAR},
+      next_contact_time = #{nextContactTime,jdbcType=CHAR},
+      address = #{address,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, fullname, appellation,owner, company, job,email, phone, website, mphone,
+           state,source, create_by, create_time,edit_by, edit_time, description, contact_summary,
+           next_contact_time, address
+    from t_clue
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, fullname, appellation, owner, company, job, email, phone, website, mphone,
+    state, source, create_by, create_time, edit_by, edit_time, description, contact_summary,
+    next_contact_time, address
+    from t_clue
+  </select>
+  <select id="selectClueByConditionsAndCount" resultMap="BaseResultMap">
+    select c.id, fullname,v3.value as appellation,u1.name as owner, company, job, c.email, phone, website, mphone,
+           v1.value as state,v2.value as source, c.create_by, c.create_time,u2.name as edit_by, c.edit_time, description, contact_summary,
+           next_contact_time, address
+    from t_clue c
+    join t_user u1 on u1.id=c.owner
+    left join t_user u2 on u2.id=c.edit_by
+    left join t_dic_value v1 on v1.id=c.state
+    left join t_dic_value v2 on v2.id=c.source
+    left join t_dic_value v3 on v3.id=c.appellation
+    <where>
+      <if test="owner!=null and owner!=''">
+        and u1.name like concat('%',#{owner},'%')
+      </if>
+      <if test="company!=null and company!=''">
+        and company like concat('%',#{company},'%')
+      </if>
+      <if test="fullname!=null and fullname!=''">
+        and fullname like concat('%',#{fullname},'%')
+      </if>
+      <if test="phone!=null and phone!='' ">
+        and phone like concat('%',#{phone},'%')
+      </if>
+      <if test="mphone!=null and mphone!=''">
+        and mphone like concat('%',#{mphone},'%')
+      </if>
+      <if test="state!=null and state!=''">
+         and state = #{state}
+      </if>
+      <if test="source!=null and source!=''">
+        and source = #{source}
+      </if>
+    </where>
+    order by create_time desc
+    limit #{startRow},#{count}
+  </select>
+  <select id="countClueByConditions" resultType="java.lang.Integer">
+    select count(*)
+    from t_clue c
+    join t_user u1 on u1.id=c.owner
+    <where>
+      <if test="owner!=null and owner!=''">
+        and u1.name like concat('%',#{owner},'%')
+      </if>
+      <if test="company!=null and company!=''">
+        and company like concat('%',#{company},'%')
+      </if>
+      <if test="fullname!=null and fullname!=''">
+        and fullname like concat('%',#{fullname},'%')
+      </if>
+      <if test="phone!=null and phone!='' ">
+        and phone like concat('%',#{phone},'%')
+      </if>
+      <if test="state!=null and state!=''">
+        and state = #{state}
+      </if>
+      <if test="source!=null and source!=''">
+        and source = #{source}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByKeys">
+    delete from t_clue
+        where id in
+      <foreach item="id" collection="ids" separator="," open="(" close=")" >
+        #{id}
+      </foreach>
+  </delete>
+  <select id="selectOneForDetail" resultMap="BaseResultMap">
+    select c.id, fullname,v3.value as appellation,u1.name as owner, company, job, c.email, phone, website, mphone,
+           v1.value as state,v2.value as source,u3.name as create_by, c.create_time,u2.name as edit_by, c.edit_time, description, contact_summary,
+           next_contact_time, address
+    from t_clue c
+           join t_user u1 on u1.id=c.owner
+           join t_user u3 on u3.id=c.create_by
+           left join t_user u2 on u2.id=c.edit_by
+           left join t_dic_value v1 on v1.id=c.state
+           left join t_dic_value v2 on v2.id=c.source
+           left join t_dic_value v3 on v3.id=c.appellation
+    where c.id = #{id}
+  </select>
+
+  <insert id="insertRelateActivity">
+    insert t_clue_activity_relation
+    values
+    <foreach collection="relations" item="relation" separator=",">
+      (#{relation.id},#{relation.clueId},#{relation.activityId})
+    </foreach>
+  </insert>
+
+  <select id="selectClueForTransfer" resultMap="BaseResultMap">
+    select c.id ,fullname,v.value as appellation,u.name as owner, company
+    from t_clue c
+    join t_user u on u.id=c.owner
+    left join t_dic_value v on v.id=c.appellation
+    where c.id = #{id,jdbcType=CHAR}
+  </select>
+    <select id="selectFunnel" resultType="com.gdut.crm.pojo.workbench.Funnel">
+      select count(*) as value,v1.value as name
+      from t_clue c
+      left join t_dic_value v1 on v1.id=c.state
+      group by c.state
+    </select>
+</mapper>

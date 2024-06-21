@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.ActivityMapper">
+  <resultMap id="BaseResultMap" type="com.gdut.crm.pojo.workbench.Activity">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="owner" jdbcType="CHAR" property="owner" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="start_date" jdbcType="CHAR" property="startDate" />
+    <result column="end_date" jdbcType="CHAR" property="endDate" />
+    <result column="cost" jdbcType="VARCHAR" property="cost" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="edit_time" jdbcType="CHAR" property="editTime" />
+    <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
+  </resultMap>
+  <sql id="activity_all_columns">
+    id, owner, name, start_date, end_date, cost, description, create_time, create_by,
+    edit_time, edit_by
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_activity
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="com.gdut.crm.pojo.workbench.Activity">
+    insert into t_activity (<include refid="activity_all_columns"/>)
+    values (#{id,jdbcType=CHAR}, #{owner,jdbcType=CHAR}, #{name,jdbcType=VARCHAR}, #{startDate,jdbcType=CHAR}, 
+      #{endDate,jdbcType=CHAR}, #{cost,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
+      #{editBy,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.gdut.crm.pojo.workbench.Activity">
+    update t_activity
+    <set>
+      <if test="owner != null and owner != ''">owner = #{owner,jdbcType=CHAR},</if>
+      <if test="name != null and name != ''">name = #{name,jdbcType=VARCHAR},</if>
+      <if test="startDate != null and startDate != ''">start_date = #{startDate,jdbcType=CHAR},</if>
+      <if test="endDate != null and endDate != ''">end_date = #{endDate,jdbcType=CHAR},</if>
+      <if test="cost != null and cost != ''">cost = #{cost,jdbcType=VARCHAR},</if>
+      <if test="description != null and description != ''">description = #{description,jdbcType=VARCHAR},</if>
+      <if test="editTime != null and editTime != ''">edit_time = #{editTime,jdbcType=CHAR},</if>
+      <if test="editBy != null and editBy != ''">edit_by = #{editBy,jdbcType=VARCHAR}</if>
+    </set>
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select a.id, owner, a.name, start_date, end_date, cost, description, a.create_time, a.create_by,
+           a.edit_time, a.edit_by
+    from t_activity a
+    where a.id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on u.id=a.owner
+  </select>
+  <!--name:name,
+					owner:owner,
+					startDate:startDate,
+					endDate:endDate,
+					count:count,
+					startRow:startRow-->
+  <select id="selectAllByConditions" resultMap="BaseResultMap">
+    select a.id, u.name as owner, a.name, start_date, end_date, cost, description, a.create_time, a.create_by,
+    a.edit_time, a.edit_by
+    from t_activity a
+    join t_user u on a.owner = u.id
+    <where>
+      <if test="name!='' and name!=null ">
+        and a.name like concat(#{name},'%')
+      </if>
+      <if test="owner!='' and owner!=null">
+        and u.name like concat(#{owner},'%')
+      </if>
+      <if test="startDate!='' and startDate!=null">
+        and start_date >= #{startDate}
+      </if>
+      <if test="endDate!='' and endDate!=null">
+        and end_date &lt;= #{endDate}
+      </if>
+    </where>
+    order by create_time desc
+    limit #{startRow},#{count}
+  </select>
+  <select id="countAllByConditions" resultType="java.lang.Integer">
+    select count(*)
+    from t_activity a
+    join t_user u on a.owner = u.id
+    <where>
+      <if test="name!='' and name!=null ">
+        and a.name like concat(#{name},'%')
+      </if>
+      <if test="owner!='' and owner!=null">
+        and u.name like concat(#{owner},'%')
+      </if>
+      <if test="startDate!='' and startDate!=null">
+        and start_date >= #{startDate}
+      </if>
+      <if test="endDate!='' and endDate!=null">
+        and end_date &lt;= #{endDate}
+      </if>
+    </where>
+  </select>
+  <delete id="deleteByKeys">
+    delete from t_activity
+    where id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectAllForDownload" resultMap="BaseResultMap">
+    select a.id, u.name as owner, a.name, start_date, end_date, cost, description, a.create_time,u2.name as create_by,
+    a.edit_time,u3.name as edit_by
+    from t_activity a
+    join t_user u on a.owner=u.id
+    join t_user u2 on a.create_by = u2.id
+    left join t_user u3 on a.edit_by = u3.id
+    <if test="ids!=null and ids!=''">
+      where a.id in
+      <foreach collection="ids" item="id" separator="," open="(" close=")">
+        #{id}
+      </foreach>
+    </if>
+  </select>
+  <insert id="insertActivities" parameterType="activity">
+    <if test="activities!=null">
+    insert into t_activity (<include refid="activity_all_columns"/>)
+      values
+      <foreach collection="activities" item="activity" separator=",">
+        (#{activity.id,jdbcType=CHAR}, #{activity.owner,jdbcType=CHAR}, #{activity.name,jdbcType=VARCHAR}, #{activity.startDate,jdbcType=CHAR},
+        #{activity.endDate,jdbcType=CHAR}, #{activity.cost,jdbcType=VARCHAR}, #{activity.description,jdbcType=VARCHAR},
+        #{activity.createTime,jdbcType=CHAR}, #{activity.createBy,jdbcType=VARCHAR}, #{activity.editTime,jdbcType=CHAR},
+        #{activity.editBy,jdbcType=VARCHAR})
+      </foreach>
+    </if>
+  </insert>
+  <select id="selectActivityById" resultMap="BaseResultMap">
+    select a.id, u.name as owner, a.name, start_date, end_date, cost, description, a.create_time,u2.name as create_by,
+    a.edit_time,u3.name as edit_by
+    from t_activity a
+    join t_user u on a.owner=u.id
+    join t_user u2 on a.create_by = u2.id
+    left join t_user u3 on a.edit_by = u3.id
+    where a.id = #{id}
+  </select>
+
+  <select id="selectActivityAssociateClue" resultMap="BaseResultMap">
+    select r.id as id, u.name as owner, a.name, start_date, end_date, cost, a.description, a.create_time, a.create_by,
+           a.edit_time, a.edit_by
+    from t_activity a
+           join t_user u on u.id=a.owner
+           join t_clue_activity_relation r on r.activity_id=a.id
+    where r.clue_id=#{id}
+  </select>
+  <delete id="deleteRelation">
+    delete from t_clue_activity_relation
+    where id = #{id}
+  </delete>
+  <select id="selectForClue" resultMap="BaseResultMap">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on a.owner=u.id
+    where a.id not in(
+      select a.id
+      from t_activity a
+             join t_clue_activity_relation r on r.activity_id=a.id
+      where r.clue_id=#{id}
+    )
+    <if test="name!=null and name!=''">
+      and a.name like concat('%',#{name},'%')
+    </if>
+  </select>
+
+  <select id="selectActivityByNameAndClueId" resultType="com.gdut.crm.pojo.workbench.Activity">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on a.owner=u.id
+    join t_clue_activity_relation r on r.activity_id=a.id
+    where r.clue_id=#{id}
+    <if test="name!=null and name!=''">
+      and a.name like concat('%',#{name},'%')
+    </if>
+  </select>
+  <select id="selectActivityByName" resultType="com.gdut.crm.pojo.workbench.Activity">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on a.owner=u.id
+    <where>
+      <if test="name!=null and name!=''">
+        and a.name like concat('%',#{name},'%')
+      </if>
+    </where>
+  </select>
+  <select id="selectByContactsId" resultType="com.gdut.crm.pojo.workbench.Activity">
+    select car.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+    join t_user u on a.owner=u.id
+    join t_contacts_activity_relation car on car.activity_id=a.id
+    where car.contacts_id=#{id}
+  </select>
+  <select id="selectNotInContactsId" resultType="com.gdut.crm.pojo.workbench.Activity">
+    select a.id, u.name as owner, a.name, start_date, end_date
+    from t_activity a
+           join t_user u on a.owner=u.id
+    where a.id not in (
+      select activity_id
+      from t_contacts_activity_relation
+      where contacts_id=#{id}
+    )
+  </select>
+  <select id="selectActivityNameById" resultType="java.lang.String">
+    select name
+    from t_activity
+    where id = #{id}
+  </select>
+    <select id="selectFunnel" resultType="com.gdut.crm.pojo.workbench.Funnel">
+      select concat(ta.name,ta.start_date) as name,count(1) as value
+      from t_activity ta
+        join t_tran tt on ta.id = tt.activity_id
+      GROUP BY tt.activity_id
+    </select>
+</mapper>

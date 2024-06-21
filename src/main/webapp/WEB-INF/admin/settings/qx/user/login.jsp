@@ -4,11 +4,13 @@
 	String path = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()+"/";
 %>
 <html>
+<head>
 <base href="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/">
 <meta charset="UTF-8">
 <link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
 <script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+	<link rel="shortcut icon" href="image/favicon.ico">
 <script>
 	$(function (){
 		$("#username").keydown(function (event){
@@ -21,6 +23,17 @@
 				$("#loginButton").click();
 			}
 		});
+		var inputElement = document.getElementById("password");
+		/*inputElement.addEventListener("input", function() {
+			if (this.value.length > 10) {
+				this.value = this.value.slice(0, 10); // 限制输入框内容为前 10 个字符
+			}
+		});*/
+		inputElement.oninput = function() {
+			if (this.value.length > 10) {
+				this.value = this.value.slice(0, 10); // 限制输入框内容为前 10 个字符
+			}
+		};
 		$(window).keydown(function (event){
 			if(event.key == "Enter" && $("#username").val()!="" && $("#password").val()!=""){
 				$("#loginButton").click();
@@ -69,7 +82,7 @@
 </head>
 <body>
 	<div style="position: absolute; top: 0px; left: 0px; width: 60%;">
-		<img src="image/IMG_7114.JPG" style="width: 100%; height: 90%; position: relative; top: 50px;">
+		<img src="image/login.jpg" style="width: 100%; height: 90%; position: relative; top: 50px;">
 	</div>
 	<div id="top" style="height: 50px; background-color: #3C3C3C; width: 100%;">
 		<div style="position: absolute; top: 5px; left: 0px; font-size: 30px; font-weight: 400; color: white; font-family: 'times new roman'">CRM &nbsp;<span style="font-size: 12px;">&copy;milky</span></div>
@@ -86,7 +99,7 @@
 						<input class="form-control" id="username" value="${cookie.username.value}" type="text" placeholder="用户名">
 					</div>
 					<div style="width: 350px; position: relative;top: 20px;">
-						<input class="form-control" id="password" value="${cookie.password.value}" type="password" placeholder="密码">
+						<input class="form-control" id="password" value="${cookie.holder.value}" type="password" placeholder="密码">
 					</div>
 					<div class="checkbox"  style="position: relative;top: 30px; left: 10px;">
 						<label>

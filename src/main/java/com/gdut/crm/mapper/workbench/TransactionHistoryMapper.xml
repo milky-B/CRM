@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.TransactionHistoryMapper">
+  <resultMap id="BaseResultMap" type="TransactionHistory">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="stage" jdbcType="VARCHAR" property="stage" />
+    <result column="money" jdbcType="VARCHAR" property="money" />
+    <result column="expected_date" jdbcType="CHAR" property="expectedDate" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="tran_id" jdbcType="CHAR" property="tranId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_tran_history
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="TransactionHistory">
+    insert into t_tran_history (id, stage, money, 
+      expected_date, create_time, create_by, 
+      tran_id)
+    values (#{id,jdbcType=CHAR}, #{stage,jdbcType=VARCHAR}, #{money,jdbcType=VARCHAR}, 
+      #{expectedDate,jdbcType=CHAR}, #{createTime,jdbcType=CHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{tranId,jdbcType=CHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="TransactionHistory">
+    update t_tran_history
+    set stage = #{stage,jdbcType=VARCHAR},
+      money = #{money,jdbcType=VARCHAR},
+      expected_date = #{expectedDate,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=CHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      tran_id = #{tranId,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, stage, money, expected_date, create_time, create_by, tran_id
+    from t_tran_history
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, stage, money, expected_date, create_time, create_by, tran_id
+    from t_tran_history
+  </select>
+  <delete id="deleteByTransactionId">
+    delete from t_tran_history
+    where tran_id = #{id}
+  </delete>
+  <select id="selectTransactionHistoryByPrimaryKey" resultType="com.gdut.crm.pojo.workbench.TransactionHistory">
+    select h.id, v.value as stage, money, expected_date, h.create_time,u.name as create_by, tran_id
+    from t_tran_history h
+    join t_user u on u.id=h.create_by
+    join t_dic_value v on v.id=h.stage
+    where h.tran_id=#{id}
+</select>
+</mapper>

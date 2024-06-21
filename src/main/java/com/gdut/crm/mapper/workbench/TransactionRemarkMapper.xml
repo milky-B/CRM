@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.TransactionRemarkMapper">
+  <resultMap id="BaseResultMap" type="TransactionRemark">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="note_content" jdbcType="VARCHAR" property="noteContent" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
+    <result column="edit_time" jdbcType="CHAR" property="editTime" />
+    <result column="edit_flag" jdbcType="CHAR" property="editFlag" />
+    <result column="tran_id" jdbcType="CHAR" property="tranId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_tran_remark
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="TransactionRemark">
+    insert into t_tran_remark (id, note_content, create_by, 
+      create_time, edit_by, edit_time, 
+      edit_flag, tran_id)
+    values (#{id,jdbcType=CHAR}, #{noteContent,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
+      #{editFlag,jdbcType=CHAR}, #{tranId,jdbcType=CHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="TransactionRemark">
+    update t_tran_remark
+    set note_content = #{noteContent,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=CHAR},
+      edit_by = #{editBy,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=CHAR},
+      edit_flag = #{editFlag,jdbcType=CHAR},
+      tran_id = #{tranId,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, tran_id
+    from t_tran_remark
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, tran_id
+    from t_tran_remark
+  </select>
+  <insert id="insertRemarks">
+    insert into t_tran_remark (id, note_content, create_by,
+                               create_time, edit_by, edit_time,
+                               edit_flag, tran_id)
+    <foreach collection="remarks" item="remark" open="values" separator=",">
+      (#{remark.id,jdbcType=CHAR}, #{remark.noteContent,jdbcType=VARCHAR}, #{remark.createBy,jdbcType=VARCHAR},
+      #{remark.createTime,jdbcType=CHAR}, #{remark.editBy,jdbcType=VARCHAR}, #{remark.editTime,jdbcType=CHAR},
+      #{remark.editFlag,jdbcType=CHAR}, #{remark.tranId,jdbcType=CHAR})
+    </foreach>
+  </insert>
+  <delete id="deleteByTransactionId">
+    delete from t_tran_remark
+    where tran_id = #{id}
+  </delete>
+</mapper>

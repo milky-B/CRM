@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.CustomerRemarkMapper">
+  <resultMap id="BaseResultMap" type="CustomerRemark">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="note_content" jdbcType="VARCHAR" property="noteContent" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
+    <result column="edit_time" jdbcType="CHAR" property="editTime" />
+    <result column="edit_flag" jdbcType="CHAR" property="editFlag" />
+    <result column="customer_id" jdbcType="CHAR" property="customerId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_customer_remark
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="CustomerRemark">
+    insert into t_customer_remark (id, note_content, create_by, 
+      create_time, edit_by, edit_time, 
+      edit_flag, customer_id)
+    values (#{id,jdbcType=CHAR}, #{noteContent,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
+      #{editFlag,jdbcType=CHAR}, #{customerId,jdbcType=CHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="CustomerRemark">
+    update t_customer_remark
+    set note_content = #{noteContent,jdbcType=VARCHAR},
+      edit_by = #{editBy,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=CHAR},
+      edit_flag = #{editFlag,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select r.id, note_content,u.name as create_by, r.create_time,u1.name as edit_by, r.edit_time, r.edit_flag,c.name as customer_id
+    from t_customer_remark r
+    join t_user u on u.id= r.create_by
+    left join t_user u1 on u1.id=r.edit_by
+    join t_customer c on c.id = r.customer_id
+    where r.id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, customer_id
+    from t_customer_remark
+  </select>
+  <insert id="insertCustomerRemarkByTransferClueRemark" >
+    <if test="remarks!=null">
+      insert into t_customer_remark (id, note_content, create_by,
+      create_time, edit_by, edit_time,
+      edit_flag, customer_id)
+      <foreach collection="remarks" item="remark" separator="," open="values">
+        (#{remark.id,jdbcType=CHAR}, #{remark.noteContent,jdbcType=VARCHAR}, #{remark.createBy,jdbcType=VARCHAR},
+        #{remark.createTime,jdbcType=CHAR}, #{remark.editBy,jdbcType=VARCHAR}, #{remark.editTime,jdbcType=CHAR},
+        #{remark.editFlag,jdbcType=CHAR}, #{remark.customerId,jdbcType=CHAR})
+      </foreach>
+    </if>
+  </insert>
+  <select id="selectByCustomerId" resultMap="BaseResultMap">
+    select r.id, note_content,u.name as create_by, r.create_time,u1.name as edit_by, r.edit_time, r.edit_flag, c.name as customer_id
+    from t_customer_remark r
+    join t_user u on u.id = r.create_by
+    left join t_user u1 on u1.id = r.edit_by
+    left join t_customer c on c.id=r.customer_id
+    where c.id = #{id}
+  </select>
+  <delete id="deleteByCustomerIds">
+    delete from t_customer_remark
+    where customer_id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+</mapper>

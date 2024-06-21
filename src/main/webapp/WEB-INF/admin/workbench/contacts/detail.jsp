@@ -27,7 +27,7 @@
 				$.each(responseText,function (){
 
 					html+="<tr id=\"tr_"+this.transaction.id+"\">"
-					html+="<td><a href=\"workbench/transaction/detail.html?id='"+this.transaction.id+"' style=\"text-decoration: none;\">"+this.transaction.name+"</a></td>"
+					html+="<td><a href=\"workbench/transaction/detail.jsp?id='"+this.transaction.id+"' style=\"text-decoration: none;\">"+this.transaction.name+"</a></td>"
 					html+="<td>"+this.transaction.money+"</td>"
 					html+="<td>"+this.transaction.stage+"</td>"
 					html+="<td>"+this.possibility+"</td>"

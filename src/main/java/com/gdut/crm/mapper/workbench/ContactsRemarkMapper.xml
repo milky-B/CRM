@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gdut.crm.mapper.workbench.ContactsRemarkMapper">
+  <resultMap id="BaseResultMap" type="ContactsRemark">
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="note_content" jdbcType="VARCHAR" property="noteContent" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="CHAR" property="createTime" />
+    <result column="edit_by" jdbcType="VARCHAR" property="editBy" />
+    <result column="edit_time" jdbcType="CHAR" property="editTime" />
+    <result column="edit_flag" jdbcType="CHAR" property="editFlag" />
+    <result column="contacts_id" jdbcType="CHAR" property="contactsId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_contacts_remark
+    where id = #{id,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="ContactsRemark">
+    insert into t_contacts_remark (id, note_content, create_by, 
+      create_time, edit_by, edit_time, 
+      edit_flag, contacts_id)
+    values (#{id,jdbcType=CHAR}, #{noteContent,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=CHAR}, #{editBy,jdbcType=VARCHAR}, #{editTime,jdbcType=CHAR}, 
+      #{editFlag,jdbcType=CHAR}, #{contactsId,jdbcType=CHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="ContactsRemark">
+    update t_contacts_remark
+    set note_content = #{noteContent,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=CHAR},
+      edit_by = #{editBy,jdbcType=VARCHAR},
+      edit_time = #{editTime,jdbcType=CHAR},
+      edit_flag = #{editFlag,jdbcType=CHAR},
+      contacts_id = #{contactsId,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, contacts_id
+    from t_contacts_remark
+    where id = #{id,jdbcType=CHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, note_content, create_by, create_time, edit_by, edit_time, edit_flag, contacts_id
+    from t_contacts_remark
+  </select>
+  <insert id="insertContactsRemarkByTransferClueRemark" parameterType="contactsRemark">
+    <if test="remarks!=null">
+    insert into t_contacts_remark (id, note_content, create_by,
+                                   create_time, edit_by, edit_time,
+                                   edit_flag, contacts_id)
+    <foreach collection="remarks" item="remark" separator="," open="values">
+    (#{remark.id,jdbcType=CHAR}, #{remark.noteContent,jdbcType=VARCHAR}, #{remark.createBy,jdbcType=VARCHAR},
+            #{remark.createTime,jdbcType=CHAR}, #{remark.editBy,jdbcType=VARCHAR}, #{remark.editTime,jdbcType=CHAR},
+            #{remark.editFlag,jdbcType=CHAR}, #{remark.contactsId,jdbcType=CHAR})
+    </foreach>
+    </if>
+  </insert>
+  <delete id="deleteByContactsIds">
+    delete from t_contacts_remark
+    where contacts_id in
+    <foreach collection="ids" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+  <select id="selectRemarkByContactsId" resultType="com.gdut.crm.pojo.workbench.ContactsRemark">
+    select r.id, note_content,u.name as create_by, r.create_time,u.name as edit_by, r.edit_time, edit_flag, contacts_id
+    from t_contacts_remark r
+    join t_user u on u.id=r.create_by
+    left join t_user u2 on u2.id=r.edit_by
+    where contacts_id=#{id}
+  </select>
+  <select id="selectRemarkById" resultType="com.gdut.crm.pojo.workbench.ContactsRemark">
+    select r.id, note_content,u.name as create_by, r.create_time,u.name as edit_by, r.edit_time, edit_flag, contacts_id
+    from t_contacts_remark r
+           join t_user u on u.id=r.create_by
+           left join t_user u2 on u2.id=r.edit_by
+    where r.id=#{id}
+  </select>
+  <update id="updateRemarkByPrimaryKey">
+    update t_contacts_remark
+    set note_content = #{noteContent,jdbcType=VARCHAR},
+        edit_by = #{editBy,jdbcType=VARCHAR},
+        edit_time = #{editTime,jdbcType=CHAR},
+        edit_flag = #{editFlag,jdbcType=CHAR}
+    where id = #{id,jdbcType=CHAR}
+  </update>
+  <delete id="deleteByRemarkId">
+    delete from t_contacts_remark
+    where contacts_id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
+  </delete>
+  <delete id="deleteByContactsId"></delete>
+</mapper>
